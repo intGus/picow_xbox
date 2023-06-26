@@ -16,6 +16,9 @@
 #define PWM_MIN 80
 #define PWM_MAX (PWM_MIN + 127)
 
+#define SIGNAL_PIN 15
+#define MUSIC_PIN 16
+
 static inline int8_t clamp8(int16_t value) {
         if (value > 127) {
                 return 127;
@@ -127,6 +130,13 @@ void chassis_set(struct chassis *chassis, int8_t linear, int8_t rot)
 void main(void) {
 	stdio_init_all();
 
+	gpio_init(SIGNAL_PIN);
+	gpio_init(MUSIC_PIN);
+	gpio_set_dir(SIGNAL_PIN, GPIO_OUT);
+	gpio_set_dir(MUSIC_PIN, GPIO_OUT);
+
+	
+
 	sleep_ms(1000);
 	printf("Hello\n");
 
@@ -141,13 +151,54 @@ void main(void) {
 	for ( ;; ) {
 		sleep_ms(20);
 		bt_hid_get_latest(&state);
-		printf("buttons: %04x, l: %d,%d, r: %d,%d, l2,r2: %d,%d hat: %d\n",
+		// this part is only related to the RX2 board to control the RC car
+		if (state.hat == 1) {
+			for(int i=0; i<=3; i++) {
+				gpio_put(SIGNAL_PIN, 1);
+				sleep_us(1500);
+
+				gpio_put(SIGNAL_PIN, 0);
+				sleep_us(500);
+			}
+			for(int i=0; i<=9; i++) {
+				gpio_put(SIGNAL_PIN, 1);
+				sleep_us(500);
+
+				gpio_put(SIGNAL_PIN, 0);
+				sleep_us(500);
+			}
+		} else if (state.hat == 5) {
+			for(int i=0; i<=3; i++) {
+				gpio_put(SIGNAL_PIN, 1);
+				sleep_us(1500);
+
+				gpio_put(SIGNAL_PIN, 0);
+				sleep_us(500);
+			}
+			for(int i=0; i<=39; i++) {
+				gpio_put(SIGNAL_PIN, 1);
+				sleep_us(500);
+
+				gpio_put(SIGNAL_PIN, 0);
+				sleep_us(500);
+			}
+			} else {
+			gpio_put(SIGNAL_PIN, 0);
+		}
+
+		if (state.buttons > 0) {
+			gpio_put(MUSIC_PIN, 1);
+		} else {
+			gpio_put(MUSIC_PIN, 0);
+		}
+
+		printf("buttons: %d, l: %d,%d, r: %d,%d, l2,r2: %d,%d hat: %d\n",
 				state.buttons, state.lx, state.ly, state.rx, state.ry,
 				state.l2, state.r2, state.hat);
 
-		float speed_scale = 1.0;
-		int8_t linear = clamp8(-(state.ly - 128) * speed_scale);
-		int8_t rot = clamp8(-(state.rx - 128));
-		chassis_set(&chassis, linear, rot);
+		// float speed_scale = 1.0;
+		// int8_t linear = clamp8(-(state.ly - 128) * speed_scale);
+		// int8_t rot = clamp8(-(state.rx - 128));
+		// chassis_set(&chassis, linear, rot);
 	}
 }

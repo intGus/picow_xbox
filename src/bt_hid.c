@@ -63,7 +63,7 @@
 // Knockoff DS4
 //static const char * remote_addr_string = "A5:15:66:8E:91:3B";
 // Brian C Knockoff DS4
-static const char * remote_addr_string = "8C:41:F2:D0:32:43";
+static const char * remote_addr_string = "EC:83:50:A0:BF:50";
 
 static bd_addr_t remote_addr;
 static bd_addr_t connected_addr;
@@ -100,67 +100,80 @@ static void hid_host_setup(void){
 }
 
 const struct bt_hid_state default_state = {
-	.buttons = 0,
+	.buttons = 0x80,
 	.lx = 0x80,
 	.ly = 0x80,
 	.rx = 0x80,
 	.ry = 0x80,
 	.l2 = 0x80,
 	.r2 = 0x80,
-	.hat = 0x8,
+	.hat = 0x80,
 };
 
 struct bt_hid_state latest;
 
 struct __attribute__((packed)) input_report_17 {
-	uint8_t report_id;
-	uint8_t pad[2];
-
-	uint8_t lx, ly;
-	uint8_t rx, ry;
-	uint8_t buttons[3];
-	uint8_t l2, r2;
-
-	uint16_t timestamp;
-	uint16_t temperature;
-	uint16_t gyro[3];
-	uint16_t accel[3];
-	uint8_t pad2[5];
-	uint8_t status[2];
-	uint8_t pad3;
+	// uint8_t report_id;
+	uint8_t x_button;
+	uint8_t lstick[4];
+	uint8_t rstick[4];
+	uint8_t ltrigger[2];
+	uint8_t rtrigger[2];
+	uint8_t dpad_value;
+	uint8_t button_value;
 };
 
 static void hid_host_handle_interrupt_report(const uint8_t *packet, uint16_t packet_len){
 	static struct bt_hid_state last_state = { 0 };
 
+	// Print the whole packet for debug
+  // printf("Received HID packet: ");
+  // for (uint16_t i = 0; i < packet_len; i++) {
+  //   printf("%02x ", packet[i]);
+  // }
+  // printf("\n");
+
 	// Only interested in report_id 0x11
-	if (packet_len < sizeof(struct input_report_17) + 1) {
-		return;
-	}
+	// if (packet_len < sizeof(struct input_report_17) + 1) {
+	// 	printf("exit due packet_len");
+	// 	return;
+	// }
 
-	if ((packet[0] != 0xa1) || (packet[1] != 0x11)) {
-		return;
-	}
+	// if ((packet[0] != 0xa1) || (packet[1] != 0x11)) {
+	// 	printf("exit due to packet not equal to 0x11 or 0xa1");
+	// 	return;
+	// }
 
-	//printf_hexdump(packet, packet_len);
+
 
 	struct input_report_17 *report = (struct input_report_17 *)&packet[1];
 
+	// printf("Report: ");
+	// for (int i = 0; i < sizeof(*report); i++) {
+	// 		printf("%02x ", ((uint8_t *)report)[i]);
+	// }
+	// printf("\n");
 	// Note: This assumes that we're protected by async_context's
 	// single-threaded-ness
 	latest = (struct bt_hid_state){
-		// Somewhat arbitrary packing of the buttons into a single 16-bit word
-		.buttons = ((report->buttons[0] & 0xf0) << 8) | ((report->buttons[2] & 0x3) << 8) | (report->buttons[1]),
-
-		.lx = report->lx,
-		.ly = report->ly,
-		.rx = report->rx,
-		.ry = report->ry,
-		.l2 = report->l2,
-		.r2 = report->r2,
-
-		.hat = (report->buttons[0] & 0xf),
+		.lx = report->lstick[1],
+		.ly = report->lstick[2],
+		.rx = report->rstick[0],
+		.ry = report->rstick[2],
+		.l2 = report->ltrigger[0],
+		.r2 = report->rtrigger[0],
+		.hat = report->dpad_value,
+		.buttons = report->button_value,
 	};
+
+	// Print parsed packet information
+	// printf("Latest HID State:\n");
+	// printf("Buttons: %d\n", latest.buttons);
+	// printf("Left Stick: (X: %d, Y: %d)\n", latest.lx, latest.ly);
+	// printf("Right Stick: (X: %d, Y: %d)\n", latest.rx, latest.ry);
+	// printf("Left Trigger: %d\n", latest.l2);
+	// printf("Right Trigger: %d\n", latest.r2);
+	// printf("D-Pad: %d\n", latest.hat);
 
 	// TODO: Parse out battery, touchpad, sixaxis, timestamp, temperature(?!)
 	// Sensors will also need calibration
