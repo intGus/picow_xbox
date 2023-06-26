@@ -1,3 +1,5 @@
+## TODO: Update readme for the xbox controller info
+
 # DualShock 4 on Pico-W
 
 This is a pretty crude project which brings up a Sony DualShock 4 (PS4)
