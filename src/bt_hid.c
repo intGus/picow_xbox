@@ -3,6 +3,7 @@
  * Copyright (C) 2017 BlueKitchen GmbH
  *
  * Modifications Copyright (C) 2021-2023 Brian Starkey <stark3y@gmail.com>
+ * Xbox Controller Support: Gustavo Diaz <intgusd@gmail.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -100,14 +101,14 @@ static void hid_host_setup(void){
 }
 
 const struct bt_hid_state default_state = {
-	.buttons = 0x80,
-	.lx = 0x80,
-	.ly = 0x80,
-	.rx = 0x80,
-	.ry = 0x80,
-	.l2 = 0x80,
-	.r2 = 0x80,
-	.hat = 0x80,
+	.buttons = 0,
+	.lx = 0,
+	.ly = 0,
+	.rx = 0,
+	.ry = 0,
+	.l2 = 0,
+	.r2 = 0,
+	.hat = 0,
 };
 
 struct bt_hid_state latest;

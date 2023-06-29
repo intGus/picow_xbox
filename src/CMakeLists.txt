@@ -1,17 +1,17 @@
-add_executable(picow_ds4
+add_executable(picow_xbox
 	main.c
 	bt_hid.c
 )
 
-pico_enable_stdio_usb(picow_ds4 1)
-pico_enable_stdio_uart(picow_ds4 0)
-pico_enable_stdio_semihosting(picow_ds4 0)
+pico_enable_stdio_usb(picow_xbox 1)
+pico_enable_stdio_uart(picow_xbox 0)
+pico_enable_stdio_semihosting(picow_xbox 0)
 
-target_include_directories(picow_ds4 PRIVATE
+target_include_directories(picow_xbox PRIVATE
 	${CMAKE_CURRENT_LIST_DIR}
 )
 
-target_link_libraries(picow_ds4
+target_link_libraries(picow_xbox
 	hardware_pwm
 	hardware_gpio
 	pico_stdlib
@@ -22,4 +22,4 @@ target_link_libraries(picow_ds4
 	pico_multicore
 )
 
-pico_add_extra_outputs(picow_ds4)
+pico_add_extra_outputs(picow_xbox)
