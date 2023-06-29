@@ -36,14 +36,17 @@ Once paired, it should reconnect when the controller is powered on.
 
 ## Usage
 
-The `main.c` file serves as an example on how to use the library. It prints to the serial monitor parsed information about the buttons since buttons and Dpad are not parsed in the bt_hid file.
+The `main.c` file serves as an example on how to use the library. It prints to the serial monitor parsed information about the buttons since buttons and d-pad are not parsed in the bt_hid file.
 
 Each button is assigned a unique binary value that represents its state. You can find which button
 is pressed performing the bitwise AND operation or combinations of buttons with OR as you see in the example.
 
+You can uncomment lines 170 to 177 from `bt_hid_c` file to see the parsed data from the controller
+with the raw data of buttons and d-pad.
+
 ## Roadmap
 
-* Parse the buttons and Dpad state from the bt_hid.c file.
+* Parse the buttons and d-pad state from the bt_hid.c file.
 * Bring back the support to PS4 controllers and parse data accordingly.
 * Remove any unused code and merge back to usedbyte's repo.
 
