@@ -1,6 +1,6 @@
 # Use an Xbox One Controller with Pico-W
 
-This library allows you to connect an Xbox One Controller **(older firmware versions without Bluetooth Low Energy)** to a Raspberry Pico W via Bluetooth Classic. It provides a simple interface to read button states and analog stick values from the controller.
+This library allows you to connect an Xbox One Controller **(with older firmware versions without Bluetooth Low Energy, if you have a newer controller or updated firmware please use [this repo instead](https://github.com/intGus/picow_ble_controller))** to a Raspberry Pico W via Bluetooth Classic. It provides a simple interface to read button states and analog stick values from the controller.
 
 This project is a fork of [usedbytes/picow_ds4](https://github.com/usedbytes/picow_ds4) made for PS4 controllers. 
 
